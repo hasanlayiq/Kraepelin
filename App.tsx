@@ -60,18 +60,23 @@ function App() {
         hasil: results.map(r => r.correctCount)
     };
 
+    console.log("Sending payload:", payload);
+
     try {
+        // Menggunakan mode: 'no-cors' adalah cara standar untuk mengirim data ke Google Apps Script dari browser client-side
+        // tanpa memicu error CORS policy yang memblokir request.
+        // Konsekuensinya: Kita tidak bisa membaca response dari server (opaque response).
         await fetch("https://script.google.com/macros/s/AKfycbye4oo7PBQlWSK2da38CJ50AIglGn1pbizWaNq1pOkmSdDtigdex1BuOi4NYtRJczfk/exec", {
             method: "POST",
-            mode: "no-cors", // Required for Google Apps Script Web App to avoid CORS errors in browser
+            mode: "no-cors",
             headers: {
-                "Content-Type": "text/plain;charset=utf-8",
+                "Content-Type": "text/plain", // Sederhanakan header agar dianggap simple request
             },
             body: JSON.stringify(payload)
         });
 
-        // Since we use no-cors, we can't read the response object to check for 200 OK.
-        // We assume success if no network error occurred.
+        // Karena no-cors, fetch akan resolve meskipun server mengembalikan error logic (asalkan server bisa dijangkau).
+        // Kita asumsikan sukses jika code sampai sini.
         alert("Hasil tes berhasil dikirim!");
         handleGoHome();
     } catch (error) {
